@@ -8,10 +8,11 @@ interpreter = api()
 def home():
     return render_template('index.html')
 
-@app.route("/button", methods=['POST'])
+@app.route('/recognize', methods=['POST'])
 def button():
     message = "테스트"
-    tmp = interpreter.language(message)
+    code = "01"
+    tmp = interpreter.language(message, code)
     print(tmp)
     return render_template('index.html',tmp = tmp)
     

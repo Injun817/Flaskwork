@@ -5,11 +5,18 @@ class api:
         self.auth_key = "bc286719-f92a-4768-b951-b9e6c170b727:fx"
         self.translator = deepl.Translator(self.auth_key)
         
-    def language(self, message):
+    def language(self, message, code):
         self.message = message
+        self.code = code
         if self.message:
-            result = self.translator.translate_text(self.message, targe7t_lang="ES")
-        
+            if self.code == "01":
+                result = self.translator.translate_text(self.message, target_lang="EN-US")
+            elif self.code == "02":
+                result = self.translator.translate_text(self.message, target_lang="ES")
+            elif self.code == "03":
+                result = self.translator.translate_text(self.message, target_lang="KO")
+
+
         #print(result)
         return result
 

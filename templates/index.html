@@ -3,28 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Button Click with Space Key</title>
-    
+    <title>음성인식 번역기</title>
 </head>
 <body>
-    <h1>Press Space to Click the Button</h1>
-    <button onclick="sendRequest()">Click Me</button>
-    <p id="result"></p>
-
+    <h1>음성인식 번역기</h1>
+    <p>스페이스바를 눌러 음성인식을 시작하세요.</p>
+    <div id="result"></div>
+    
     <script>
-
-        
-            fetch("/button");
-        document.addEventListener('DOMContentLoaded', (event) => {
-            document.addEventListener('keydown', (e) => {
-                if (e.code === 'Space') {
-                    e.preventDefault(); // Space 키의 기본 동작 방지 (스크롤)
-                    document.getElementById('myButton').click(); // 버튼 클릭
-                }
-            });
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space') {
+                startRecording();
+            }
         });
-    </script>
 
+        function startRecording() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('음성인식 기능을 사용할 수 없습니다.');
+                return;
+            }
+
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    const mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.start();
+
+                    mediaRecorder.ondataavailable = function(event) {
+                        const formData = new FormData();
+                        formData.append('audio_data', event.data);
+
+                        fetch('/recognize', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.error) {
+                                alert('오류: ' + data.error);
+                            } else {
+                                document.getElementById('result').innerText = data.text;
+                            }
+                        });
+                    };
+
+                    setTimeout(() => {
+                        mediaRecorder.stop();
+                    }, 3000); // 3초간 녹음
+                })
+                .catch(error => {
+                    console.error('Error accessing media devices.', error);
+                });
+        }
+    
+    </script>
     {{tmp}}
+    
 </body>
 </html>
