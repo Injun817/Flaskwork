@@ -8,8 +8,7 @@ class api:
     def language(self, message):
         self.message = message
         if self.message:
-            cause = self.translator.translate_text(self.message, target_lang="ES")
-            result = cause
+            result = self.translator.translate_text(self.message, targe7t_lang="ES")
         
         #print(result)
         return result
